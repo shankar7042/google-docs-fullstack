@@ -4,9 +4,11 @@ dotenv.config({ path: ".env.development" });
 
 import env from "./config/env.config";
 import db from "./db/models";
+import router from "./routes";
 
 const app: Express = express();
 app.use(express.json());
+app.use(router);
 
 db.sequelize.sync();
 
