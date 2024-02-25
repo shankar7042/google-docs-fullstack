@@ -45,6 +45,41 @@ class UserController {
     return res.status(200).json(resetPasswordResponse);
   });
 
+  public verifyEmail = catchAsync(async (req: Request, res: Response) => {
+    const token = req.params.token;
+
+    jwt.verify(
+      token,
+      "verify_token",
+      (err: VerifyErrors | null, decoded: unknown) => {
+        if (err) return res.sendStatus(403);
+        try {
+          const { email } = decoded as { email: string };
+          userService
+            .findUserByVerificationToken(email, token)
+            .then((user) => {
+              if (!user || user.isVerified) return res.sendStatus(400);
+
+              userService
+                .updateIsVerified(user, true)
+                .then(() => {
+                  return res.sendStatus(200);
+                })
+                .catch(() => {
+                  return res.sendStatus(500);
+                });
+            })
+            .catch(() => {
+              return res.sendStatus(500);
+            });
+        } catch (error) {
+          console.log(error);
+          return res.sendStatus(403);
+        }
+      }
+    );
+  });
+
   public confirmResetPassword = catchAsync(
     async (req: Request, res: Response) => {
       const err = validationResult(req);

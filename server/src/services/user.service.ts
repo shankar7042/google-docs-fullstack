@@ -12,7 +12,7 @@ class UserService {
   public createUser = async (email: string, password: string) => {
     const salt = await genSalt(10);
     const hashedPassword = await hash(password, salt);
-    const verificationToken = jwt.sign({ email }, "some very secret key");
+    const verificationToken = jwt.sign({ email }, "verify_token");
     const user = User.create({
       email: email,
       password: hashedPassword,
@@ -130,6 +130,24 @@ class UserService {
     const hashedPassword = await hash(password, salt);
     await user.update({
       password: hashedPassword,
+    });
+  };
+
+  public findUserByVerificationToken = async (
+    email: string,
+    verificationToken: string
+  ): Promise<User | null> => {
+    return await User.findOne({
+      where: {
+        email,
+        verificationToken,
+      },
+    });
+  };
+
+  public updateIsVerified = async (user: User, isVerified: boolean) => {
+    await user.update({
+      isVerified,
     });
   };
 }
