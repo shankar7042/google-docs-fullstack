@@ -112,6 +112,26 @@ class UserService {
 
     // send password reset email to the user
   };
+
+  public findUserByPasswordResetToken = async (
+    email: string,
+    passwordResetToken: string
+  ): Promise<User | null> => {
+    return await User.findOne({
+      where: {
+        email,
+        passwordResetToken,
+      },
+    });
+  };
+
+  public updatePassword = async (user: User, password: string) => {
+    const salt = await genSalt(10);
+    const hashedPassword = await hash(password, salt);
+    await user.update({
+      password: hashedPassword,
+    });
+  };
 }
 
 const userService = new UserService();

@@ -15,4 +15,10 @@ router.post(
   userController.resetPassword
 );
 
+router.put(
+  "/password/:token",
+  userValidator.confirmResetPassword,
+  userController.confirmResetPassword
+);
+
 export default router;
