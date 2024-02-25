@@ -9,6 +9,10 @@ class AuthValidator {
 
     body("password").exists().withMessage("Must provide a password"),
   ];
+
+  public refreshToken = [
+    body("token").exists().withMessage("Must provide a valid token"),
+  ];
 }
 
 const authValidator = new AuthValidator();
